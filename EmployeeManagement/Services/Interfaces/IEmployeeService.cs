@@ -1,0 +1,15 @@
+﻿using EmployeeManagement.DTO;
+
+namespace EmployeeManagement.Services
+{
+    public interface IEmployeeService
+    {
+        string CreateEmployee(EmployeeRequestDto dto);
+        List<EmployeeResponseDto> GetAllEmployees();
+        EmployeeResponseDto GetEmployeeById(int id);
+        EmployeeResponseDto GetEmployeeByName(string name);
+        string UpdateEmployee(int id, UpdateEmployeeDto dto);
+        string SoftDeleteEmployee(int id);
+    }
+}
+
