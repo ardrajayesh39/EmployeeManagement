@@ -8,8 +8,11 @@ namespace EmployeeManagement.Services
         List<EmployeeResponseDto> GetAllEmployees();
         EmployeeResponseDto GetEmployeeById(int id);
         EmployeeResponseDto GetEmployeeByName(string name);
-        string UpdateEmployee(int id, UpdateEmployeeDto dto);
+
+        EmployeeResponseDto? UpdateEmployee(int id, EmployeeRequestDto dto);
+        //string UpdateEmployee(int id, UpdateEmployeeDto dto);
         string SoftDeleteEmployee(int id);
+
     }
 }
 

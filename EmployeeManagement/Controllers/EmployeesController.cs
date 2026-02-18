@@ -42,7 +42,7 @@ namespace EmployeeManagement.Controllers
                 return NotFound("Employee not found");
             return Ok(_employeeService.GetEmployeeById(id));
         }
-        [HttpGet("by-name/{name}")]
+        [HttpGet("{name}")]
         public IActionResult GetEmployeeByName(string name)
         {
             var employee = _employeeService.GetEmployeeByName(name);
@@ -51,11 +51,19 @@ namespace EmployeeManagement.Controllers
             return Ok(employee);
         }
 
-        [HttpPatch("{id}")]
-        public IActionResult UpdateEmployee(int id, UpdateEmployeeDto dto)
+       
+        [HttpPut("{id:int}")]
+        public IActionResult UpdateEmployee(int id, EmployeeRequestDto dto)
         {
-            return Ok(_employeeService.UpdateEmployee(id, dto));
+            var result = _employeeService.UpdateEmployee(id, dto);
+
+            if (result == null)
+                return NotFound("Employee not found");
+
+            return Ok(result);
         }
+
+
 
         [HttpDelete("{id:int}")]
         public IActionResult Delete(int id)
