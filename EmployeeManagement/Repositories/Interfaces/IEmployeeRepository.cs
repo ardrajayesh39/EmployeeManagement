@@ -10,5 +10,10 @@ namespace EmployeeManagement.Repositories.Interfaces
         List<Employee> GetAllActive();
         void Update(Employee employee);
         void Save();
+
+        Department? GetDepartmentById(int departmentId);
+        Skill? GetSkillByName(string skillName);
+        void AddSkill(Skill skill);
+        void AddEmployeeSkill(EmployeeSkill employeeSkill);
     }
 }

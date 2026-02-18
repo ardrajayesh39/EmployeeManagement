@@ -23,6 +23,9 @@ namespace EmployeeManagement.Controllers
         {
             {
                 var result = _employeeService.CreateEmployee(dto);
+                if (result == null)
+                    return BadRequest("Invalid Department");
+
                 return Ok(result);
             }
 
@@ -40,7 +43,7 @@ namespace EmployeeManagement.Controllers
 
             if (employee == null)
                 return NotFound("Employee not found");
-            return Ok(_employeeService.GetEmployeeById(id));
+            return Ok(employee);
         }
         [HttpGet("{name}")]
         public IActionResult GetEmployeeByName(string name)

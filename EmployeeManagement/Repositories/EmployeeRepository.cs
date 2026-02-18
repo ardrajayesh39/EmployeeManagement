@@ -57,6 +57,29 @@ namespace EmployeeManagement.Repositories
         {
             _context.SaveChanges();
         }
+
+        public Department? GetDepartmentById(int departmentId)
+        {
+            return _context.Departments
+                .FirstOrDefault(d => d.DepartmentId == departmentId);
+        }
+
+        public Skill? GetSkillByName(string skillName)
+        {
+            return _context.Skills
+                .FirstOrDefault(s => s.SkillName == skillName);
+        }
+
+        public void AddSkill(Skill skill)
+        {
+            _context.Skills.Add(skill);
+        }
+
+        public void AddEmployeeSkill(EmployeeSkill employeeSkill)
+        {
+            _context.EmployeeSkills.Add(employeeSkill);
+        }
+
     }
 
 }

@@ -10,7 +10,7 @@ namespace EmployeeManagement.Services
         EmployeeResponseDto GetEmployeeByName(string name);
 
         EmployeeResponseDto? UpdateEmployee(int id, EmployeeRequestDto dto);
-        //string UpdateEmployee(int id, UpdateEmployeeDto dto);
+      
         string SoftDeleteEmployee(int id);
 
     }
