@@ -20,7 +20,7 @@ namespace EmployeeManagement.Repositories
             _context.Employees.Add(employee);
         }
 
-        public Employee GetById(int id)
+        public Employee? GetById(int id)
         {
             return _context.Employees
                 .Include(e => e.Department)
@@ -29,7 +29,7 @@ namespace EmployeeManagement.Repositories
                 .FirstOrDefault(e => e.EmployeeId == id && e.IsActive);
         }
 
-        public Employee GetByName(string name)
+        public Employee? GetByName(string name)
         {
             return _context.Employees
                 .Include(e => e.Department)

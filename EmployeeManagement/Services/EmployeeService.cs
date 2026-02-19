@@ -14,14 +14,14 @@ namespace EmployeeManagement.Services
         }
 
         // CREATE Employee
-        public string CreateEmployee(EmployeeRequestDto dto)
+        public EmployeeResponseDto? CreateEmployee(EmployeeRequestDto dto)
         {
-           
+
             var department = _repository.GetDepartmentById(dto.DepartmentId);
             if (department == null)
                 return null;
 
-            
+
             var employee = new Employee
             {
                 EmployeeName = dto.EmployeeName,
@@ -37,7 +37,7 @@ namespace EmployeeManagement.Services
             _repository.Add(employee);
             _repository.Save();
 
-          
+
             if (dto.Skills != null && dto.Skills.Any())
             {
                 foreach (var skillName in dto.Skills)
@@ -48,7 +48,6 @@ namespace EmployeeManagement.Services
                     {
                         skill = new Skill { SkillName = skillName };
                         _repository.AddSkill(skill);
-                        _repository.Save();
                     }
 
                     _repository.AddEmployeeSkill(new EmployeeSkill
@@ -61,7 +60,8 @@ namespace EmployeeManagement.Services
                 _repository.Save();
             }
 
-            return "Employee created successfully";
+            return MapToResponse(employee);
+
         }
 
         // GET ALL Active Employees
@@ -69,20 +69,10 @@ namespace EmployeeManagement.Services
         {
             var employees = _repository.GetAllActive();
 
-            return employees.Select(e => new EmployeeResponseDto
-            {
-                EmployeeId = e.EmployeeId,
-                EmployeeName = e.EmployeeName,
-                Email = e.Email,
-                PhoneNumber = e.PhoneNumber,
-                Age = e.Age,
-                Salary = e.Salary,
-                IsActive = e.IsActive,
-                DepartmentName = e.Department?.DepartmentName,
-                Skills = e.EmployeeSkills?
-                            .Select(es => es.Skill.SkillName)
-                            .ToList()
-            }).ToList();
+            return employees
+               .Select(e => MapToResponse(e))
+               .ToList();
+
         }
 
         // GET Employee by Id
@@ -93,20 +83,8 @@ namespace EmployeeManagement.Services
             if (employee == null)
                 return null;
 
-            return new EmployeeResponseDto
-            {
-                EmployeeId = employee.EmployeeId,
-                EmployeeName = employee.EmployeeName,
-                Email = employee.Email,
-                PhoneNumber = employee.PhoneNumber,
-                Age = employee.Age,
-                Salary = employee.Salary,
-                IsActive = employee.IsActive,
-                DepartmentName = employee.Department?.DepartmentName,
-                Skills = employee.EmployeeSkills?
-                            .Select(es => es.Skill.SkillName)
-                            .ToList()
-            };
+            return MapToResponse(employee);
+
         }
 
         // GET Employee by Name
@@ -117,35 +95,21 @@ namespace EmployeeManagement.Services
             if (employee == null)
                 return null;
 
-            return new EmployeeResponseDto
-            {
-                EmployeeId = employee.EmployeeId,
-                EmployeeName = employee.EmployeeName,
-                Email = employee.Email,
-                PhoneNumber = employee.PhoneNumber,
-                Age = employee.Age,
-                Salary = employee.Salary,
-                IsActive = employee.IsActive,
-                DepartmentName = employee.Department?.DepartmentName,
-                Skills = employee.EmployeeSkills?
-                            .Select(es => es.Skill.SkillName)
-                            .ToList()
-            };
-        }
+            return MapToResponse(employee);
 
-        // UPDATE Employee
-        public EmployeeResponseDto? UpdateEmployee(int id, EmployeeRequestDto dto)
+        }
+        //UPDATE EMPLOYEE
+        public (string status, EmployeeResponseDto? data) UpdateEmployee(int id, EmployeeRequestDto dto)
         {
             var employee = _repository.GetById(id);
             if (employee == null)
-                return null;
+                return ("NotFound", null);
 
-           
             var department = _repository.GetDepartmentById(dto.DepartmentId);
             if (department == null)
-                return null;
+                return ("InvalidDepartment", null);
 
-           
+            // Update fields
             employee.EmployeeName = dto.EmployeeName;
             employee.Email = dto.Email;
             employee.PhoneNumber = dto.PhoneNumber;
@@ -156,6 +120,32 @@ namespace EmployeeManagement.Services
             _repository.Update(employee);
             _repository.Save();
 
+            var response = MapToResponse(employee);
+            return ("Success", response);
+
+        }
+
+
+        // SOFT DELETE
+        public bool? SoftDeleteEmployee(int id)
+        {
+            var employee = _repository.GetById(id);
+
+            if (employee == null)
+                return null;
+
+            if (!employee.IsActive)
+                return false;
+
+            employee.IsActive = false;
+            _repository.Update(employee);
+            _repository.Save();
+
+            return true;
+        }
+
+        private EmployeeResponseDto MapToResponse(Employee employee)
+        {
             return new EmployeeResponseDto
             {
                 EmployeeId = employee.EmployeeId,
@@ -170,25 +160,6 @@ namespace EmployeeManagement.Services
                             .Select(es => es.Skill.SkillName)
                             .ToList()
             };
-        }
-
-        // SOFT DELETE
-        public string SoftDeleteEmployee(int id)
-        {
-            var employee = _repository.GetById(id);
-
-            if (employee == null)
-                return "NotFound";
-
-            if (!employee.IsActive)
-                return "AlreadyInactive";
-
-            employee.IsActive = false;
-
-            _repository.Update(employee);
-            _repository.Save();
-
-            return "Employee deactivated successfully";
         }
     }
 }
